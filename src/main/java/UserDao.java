@@ -14,28 +14,28 @@ import java.util.List;
 public class UserDao {
 
     private JdbcTemplate jdbcTemplate;
-
     public void setDataSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    private RowMapper<User> userRowMapper = (resultSet, i) -> {
+        User user = new User();
+        user.setId(resultSet.getString("id"));
+        user.setName(resultSet.getString("name"));
+        user.setPassword(resultSet.getString("password"));
+        user.setLevel(Level.valueOf(resultSet.getInt("level")));
+        user.setLogin(resultSet.getInt("login"));
+        user.setRecommend(resultSet.getInt("recommend"));
+        return user;
+    };
+
     public void add(final User user) {
-        this.jdbcTemplate.update("INSERT INTO auser (id, name, password) VALUES (?, ?, ?)",
-                user.getId(), user.getName(), user.getPassword());
+        this.jdbcTemplate.update("INSERT INTO auser (id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)",
+                user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject("SELECT * FROM auser WHERE id = ?", new Object[]{id},
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet resultSet, int i) throws SQLException {
-                        User user = new User();
-                        user.setId(resultSet.getString("id"));
-                        user.setName(resultSet.getString("name"));
-                        user.setPassword(resultSet.getString("password"));
-                        return user;
-                    }
-                });
+        return this.jdbcTemplate.queryForObject("SELECT * FROM auser WHERE id = ?", new Object[]{id}, this.userRowMapper);
     }
 
     public void deleteAll() {
@@ -43,12 +43,7 @@ public class UserDao {
     }
 
     public int getCount() {
-        return this.jdbcTemplate.query(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                return connection.prepareStatement("SELECT COUNT(*) FROM auser");
-            }
-        }, new ResultSetExtractor<Integer>() {
+        return this.jdbcTemplate.query("SELECT COUNT(*) FROM auser", new ResultSetExtractor<Integer>() {
             @Override
             public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
                 resultSet.next();
@@ -58,15 +53,13 @@ public class UserDao {
     }
 
     public List<User> getAll() {
-        return this.jdbcTemplate.query("SELECT * FROM auser ORDER BY id", new RowMapper<User>() {
-            public User mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-                User user = new User();
-                user.setId(resultSet.getString("id"));
-                user.setName(resultSet.getString("name"));
-                user.setPassword(resultSet.getString("password"));
-                return user;
-            }
-        });
+        return this.jdbcTemplate.query("SELECT * FROM auser ORDER BY id", this.userRowMapper);
     }
+
+    public void update(User user) {
+        this.jdbcTemplate.update("UPDATE auser SET name = ?, password = ?, level = ?, login = ?, recommend = ? WHERE id = ?",
+                user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+    }
+
 
 }
