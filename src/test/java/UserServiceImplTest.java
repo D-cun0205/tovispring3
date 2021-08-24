@@ -14,26 +14,26 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
-public class UserServiceTest {
+public class UserServiceImplTest extends UserServiceImpl {
 
     @Autowired
     UserService userService;
 
     @Autowired
-    UserDao userDao;
+    PlatformTransactionManager transactionManager;
 
     @Autowired
-    PlatformTransactionManager transactionManager;
+    UserDao userDao;
 
     List<User> users;
 
     @Before
     public void setUp() {
         users = Arrays.asList(
-                new User("bora", "보라돌이", "p1", Level.BASIC, userService.MIN_LOGCOUNT_FOR_SILVER-1, 0),
-                new User("ddu", "뚜비", "p2", Level.BASIC, userService.MIN_LOGCOUNT_FOR_SILVER, 0),
-                new User("nana", "나나", "p3", Level.SILVER, userService.MIN_LOGCOUNT_FOR_SILVER, userService.MIN_RECOMMEND_FOR_GOLD-1),
-                new User("bbo", "뽀오", "p4", Level.SILVER, userService.MIN_LOGCOUNT_FOR_SILVER, userService.MIN_RECOMMEND_FOR_GOLD),
+                new User("bora", "보라돌이", "p1", Level.BASIC, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER-1, 0),
+                new User("ddu", "뚜비", "p2", Level.BASIC, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER, 0),
+                new User("nana", "나나", "p3", Level.SILVER, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER, UserServiceImpl.MIN_RECOMMEND_FOR_GOLD-1),
+                new User("bbo", "뽀오", "p4", Level.SILVER, UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER, UserServiceImpl.MIN_RECOMMEND_FOR_GOLD),
                 new User("samsung", "텔레토비동산청소기", "p5", Level.GOLD, 100, 100)
         );
     }
@@ -57,7 +57,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void upgradeLevels() throws Exception {
+    public void upgradeLevels() {
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
@@ -72,18 +72,19 @@ public class UserServiceTest {
 
     @Test
     public void upgradeAllOrNothing() throws Exception {
-        UserService testUserService = new UserService.TestUserService(users.get(3).getId());
+        UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
-        testUserService.setTransactionManager(transactionManager);
+
+        UserServiceTx txUserService = new UserServiceTx();
+        txUserService.setTransactionManager(this.transactionManager);
+        txUserService.setUserService(txUserService);
+
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
         try {
             testUserService.upgradeLevels();
-//            fail("TestUserServiceException expeted");
-        } catch(UserService.TestUserServiceException e) {}
-
-        //checkLevelUpgraded(users.get(1), false);
+        } catch(UserServiceImpl.TestUserServiceException e) {}
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
