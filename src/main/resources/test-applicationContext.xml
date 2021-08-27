@@ -4,22 +4,22 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- Home -->
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-        <property name="driverClass" value="org.postgresql.Driver" />
-        <property name="url" value="jdbc:postgresql://localhost:5432/springtest" />
-        <property name="username" value="dcun" />
-        <property name="password" value="1234" />
-    </bean>
-
-    <!-- Company -->
 <!--    <bean id="dataSource"-->
 <!--          class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
 <!--        <property name="driverClass" value="org.postgresql.Driver" />-->
-<!--        <property name="url" value="jdbc:postgresql://localhost:5432/springbootdb" />-->
-<!--        <property name="username" value="postgres" />-->
+<!--        <property name="url" value="jdbc:postgresql://localhost:5432/springtest" />-->
+<!--        <property name="username" value="dcun" />-->
 <!--        <property name="password" value="1234" />-->
 <!--    </bean>-->
+
+    <!-- Company -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="org.postgresql.Driver" />
+        <property name="url" value="jdbc:postgresql://localhost:5432/springbootdb" />
+        <property name="username" value="postgres" />
+        <property name="password" value="1234" />
+    </bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />

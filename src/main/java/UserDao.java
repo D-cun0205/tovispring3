@@ -61,5 +61,4 @@ public class UserDao {
                 user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
     }
 
-
 }

@@ -1,7 +1,3 @@
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-
 import java.util.List;
 
 public class UserServiceImpl implements UserService {

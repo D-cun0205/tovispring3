@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
@@ -90,6 +91,29 @@ public class UserServiceImplTest extends UserServiceImpl {
             testUserService.upgradeLevels();
         } catch(UserServiceImpl.TestUserServiceException e) {}
     }
+
+// Spring Framework에서 권하는 단위테스트에 필요한 mokito 툴 사용법 6장 초반부에서 다루고 다시 사용하지않으므로 주석처리
+//    @Test
+//    public void mockUpgradeLevels() throws Exception {
+//        UserServiceImpl userServiceImpl = new UserServiceImpl();
+//
+//        UserDao mockUserDao = mock(UserDao.class); //가짜 UserDao 생성
+//        when(mockUserDao.getAll()).thenReturn(this.users); //getAll이라는 메소드가 호출되면 users에서 값을 세팅하도록
+//        userServiceImpl.setUserDao(mockUserDao); // UserServiceImpl에 가짜객체를 DI해줌.
+//
+//        userServiceImpl.upgradeLevels();
+//
+//        // times() : method 호출 횟수 검증
+//        // any() : 파라미터 내용 무시상태로 호출 횟수 확인
+//        verify(mockUserDao, times(2)).update(any(User.class)); //mockUserDao의 update메소드가 2번 호출됬는지 확인
+//        verify(mockUserDao, times(2)).update(any(User.class));
+//        //users.get(1)에 해당하는 두번째사용자가 update메소드가 호출된적이 있는지?
+//        verify(mockUserDao).update(users.get(1));
+//        assertThat(users.get(1).getLevel(), is(Level.SILVER));
+//        //users.get(1)에 해당하는 네번째사용자가 update메소드가 호출된적이 있는지?
+//        verify(mockUserDao).update(users.get(3));
+//        assertThat(users.get(3).getLevel(), is(Level.GOLD));
+//    }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userDao.get(user.getId());
