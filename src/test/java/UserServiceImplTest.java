@@ -7,6 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,9 +81,16 @@ public class UserServiceImplTest extends UserServiceImpl {
         UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
 
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(this.transactionManager);
-        txUserService.setUserService(txUserService);
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeLevels");
+        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
+
+        //TransactionHandler를 사용하지 않고 직접 생성해서 사용했을때
+//        UserServiceTx txUserService = new UserServiceTx();
+//        txUserService.setTransactionManager(this.transactionManager);
+//        txUserService.setUserService(txUserService);
 
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
