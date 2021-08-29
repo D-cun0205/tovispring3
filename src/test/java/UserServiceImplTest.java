@@ -2,7 +2,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,6 +35,9 @@ public class UserServiceImplTest extends UserServiceImpl {
     UserDao mockUserDao;
 
     List<User> users;
+
+    @Autowired
+    ApplicationContext context;
 
     @Before
     public void setUp() {
@@ -77,15 +83,27 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
+    @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
         UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl(users.get(3).getId());
         testUserService.setUserDao(this.userDao);
 
-        TransactionHandler txHandler = new TransactionHandler();
-        txHandler.setTarget(testUserService);
-        txHandler.setTransactionManager(transactionManager);
-        txHandler.setPattern("upgradeLevels");
-        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
+        //앞전에 모든 테스트를 통합하여 MethodInterceptor를 상속받은 TransactionAdvice를 팩토리 빈설정하여 context getBean으로 호출하여 사용
+        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+        txProxyFactoryBean.setTarget(testUserService);
+        UserService txUserService = (UserService)txProxyFactoryBean.getObject();
+
+//        TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
+//        //applicationContext에 TxProxyFactoryBean설정을 가져와서 Proxy를 별도로 생성 할 필요없음.
+//        txProxyFactoryBean.setTarget(testUserService);
+//        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
+
+        //applicationContext를 설정하기전에 다이나믹프록시를 세팅하여 사용하는경우
+//        TransactionHandler txHandler = new TransactionHandler();
+//        txHandler.setTarget(testUserService);
+//        txHandler.setTransactionManager(transactionManager);
+//        txHandler.setPattern("upgradeLevels");
+//        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
 
         //TransactionHandler를 사용하지 않고 직접 생성해서 사용했을때
 //        UserServiceTx txUserService = new UserServiceTx();
@@ -96,8 +114,11 @@ public class UserServiceImplTest extends UserServiceImpl {
         for(User user : users) userDao.add(user);
 
         try {
-            testUserService.upgradeLevels();
+            //testUserService.upgradeLevels();
+            txUserService.upgradeLevels();
         } catch(UserServiceImpl.TestUserServiceException e) {}
+
+        //checkLevelUpgraded(users.get(1), false);
     }
 
 // Spring Framework에서 권하는 단위테스트에 필요한 mokito 툴 사용법 6장 초반부에서 다루고 다시 사용하지않으므로 주석처리

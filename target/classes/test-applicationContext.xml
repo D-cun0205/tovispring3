@@ -25,10 +25,35 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="userService" class="UserServiceTx">
+    <bean id="transactionAdvice" class="TransactionAdvice">
         <property name="transactionManager" ref="transactionManager" />
-        <property name="userService" ref="userServiceImpl" />
     </bean>
+
+    <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+        <property name="mappedName" value="upgrade*" />
+    </bean>
+
+    <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="advice" ref="transactionAdvice" />
+        <property name="pointcut" ref="transactionPointcut" />
+    </bean>
+
+    <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userServiceImpl" />
+        <property name="interceptorNames">
+            <list>
+                <value>transactionAdvisor</value>
+            </list>
+        </property>
+    </bean>
+
+<!--    <bean id="userService" class="TxProxyFactoryBean">-->
+<!--        <property name="target" ref="userServiceImpl" />-->
+<!--        <property name="transactionManager" ref="transactionManager" />-->
+<!--        &lt;!&ndash; pattern value에 값을 지정하지않을경우 해당 클래스에 있는 모든 메소드는 트랜잭션을 타게됨 &ndash;&gt;-->
+<!--        <property name="pattern" value="upgradeLevels" />-->
+<!--        <property name="serviceInterface" value="UserService" />-->
+<!--    </bean>-->
 
     <bean id="userServiceImpl" class="UserServiceImpl">
         <property name="userDao" ref="userDao" />

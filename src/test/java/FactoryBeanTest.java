@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration()
+@ContextConfiguration
 public class FactoryBeanTest {
 
     @Autowired
@@ -19,7 +19,6 @@ public class FactoryBeanTest {
     public void getMessageFromFactoryBean() {
         Object message = context.getBean("message");
         assertThat(((Message)message).getText(), is("Factory Bean"));
-
     }
 
 }
