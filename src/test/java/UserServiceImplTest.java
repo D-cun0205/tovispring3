@@ -2,6 +2,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+
+import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +26,9 @@ public class UserServiceImplTest extends UserServiceImpl {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserService testUserService;
 
     @Autowired
     PlatformTransactionManager transactionManager;
@@ -83,15 +88,14 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
-    @DirtiesContext
     public void upgradeAllOrNothing() throws Exception {
-        UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl(users.get(3).getId());
-        testUserService.setUserDao(this.userDao);
+//        UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl();
+//        testUserService.setUserDao(this.userDao);
 
         //앞전에 모든 테스트를 통합하여 MethodInterceptor를 상속받은 TransactionAdvice를 팩토리 빈설정하여 context getBean으로 호출하여 사용
-        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-        txProxyFactoryBean.setTarget(testUserService);
-        UserService txUserService = (UserService)txProxyFactoryBean.getObject();
+//        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+//        txProxyFactoryBean.setTarget(testUserService);
+//        UserService txUserService = (UserService)txProxyFactoryBean.getObject();
 
 //        TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
 //        //applicationContext에 TxProxyFactoryBean설정을 가져와서 Proxy를 별도로 생성 할 필요없음.
@@ -115,10 +119,34 @@ public class UserServiceImplTest extends UserServiceImpl {
 
         try {
             //testUserService.upgradeLevels();
-            txUserService.upgradeLevels();
+            this.testUserService.upgradeLevels();
         } catch(UserServiceImpl.TestUserServiceException e) {}
 
         //checkLevelUpgraded(users.get(1), false);
+    }
+
+    @Test
+    public void methodSignaturePointcut() throws SecurityException, NoSuchMethodException {
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        //pointcut.setExpression("execution(public int Target.minus(int,int) throws java.lang.RuntimeException)");
+        pointcut.setExpression("execution(* minus(..))");
+
+        assertThat(pointcut.getClassFilter().matches(Target.class) &&
+                pointcut.getMethodMatcher().matches(Target.class.getMethod("minus", int.class, int.class), null), is(true));
+
+        assertThat(pointcut.getClassFilter().matches(Target.class) &&
+                pointcut.getMethodMatcher().matches(Target.class.getMethod("plus", int.class, int.class), null), is(false));
+
+        assertThat(pointcut.getClassFilter().matches(Bean.class) &&
+                pointcut.getMethodMatcher().matches(Target.class.getMethod("method"), null), is(false));
+    }
+
+    public void pointcutMatches(String expression, boolean expected, Class<?> clazz, String methodName, Class<?>... args) throws Exception {
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        pointcut.setExpression(expression);
+
+        assertThat(pointcut.getClassFilter().matches(clazz) &&
+                pointcut.getMethodMatcher().matches(clazz.getMethod(methodName, args), null), is(expected));
     }
 
 // Spring Framework에서 권하는 단위테스트에 필요한 mokito 툴 사용법 6장 초반부에서 다루고 다시 사용하지않으므로 주석처리

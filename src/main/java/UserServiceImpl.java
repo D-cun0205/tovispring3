@@ -41,15 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     static class TestUserServiceImpl extends UserServiceImpl {
-        private String id;
-        TestUserServiceImpl(String id) {
-            this.id = id;
-        }
+        private String id = "bbo";
 
-//        protected void upgradeLevel(User user) {
-//            if(user.getId().equals(this.id)) throw new TestUserServiceException();
-//            super.upgradeLevel(user);
-//        }
+        protected void upgradeLevel(User user) {
+            if(user.getId().equals(this.id)) throw new TestUserServiceException();
+            super.upgradeLevel(user);
+        }
     }
 
     static class TestUserServiceException extends RuntimeException {}
