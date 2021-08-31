@@ -1,12 +1,17 @@
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMEND_FOR_GOLD = 30;
 
+    @Autowired
     UserDao userDao;
 
     public void setUserDao(UserDao userDao) {
@@ -30,6 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) { userDao.update(user); }
+
+    @Override
+    public int getCount() { return userDao.getCount(); }
 
     public void upgradeLevels() {
         List<User> users = userDao.getAll();

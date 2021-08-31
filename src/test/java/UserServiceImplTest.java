@@ -2,10 +2,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -22,18 +20,9 @@ public class UserServiceImplTest extends UserServiceImpl {
     UserService userService;
 
     @Autowired
-    UserService testUserService;
-
-    @Autowired
-    PlatformTransactionManager transactionManager;
-
-    @Autowired
-    UserDao userDao;
+    UserDaoJdbc userDao;
 
     List<User> users;
-
-    @Autowired
-    ApplicationContext context;
 
     @Before
     public void setUp() {
@@ -47,8 +36,14 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
+    public void realAdd() {
+        userService.deleteAll();
+        assertThat(userService.getCount(), is(0));
+    }
+
+    @Test
     public void add() {
-        userDao.deleteAll();
+        userService.deleteAll();
 
         User userWithLevel = users.get(4);
         User userWithoutLevel = users.get(0);
@@ -57,8 +52,8 @@ public class UserServiceImplTest extends UserServiceImpl {
         userService.add(userWithLevel);
         userService.add(userWithoutLevel);
 
-        User userWithLevelRead = userDao.get(userWithLevel.getId());
-        User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
+        User userWithLevelRead = userService.get(userWithLevel.getId());
+        User userWithoutLevelRead = userService.get(userWithoutLevel.getId());
 
         assertThat(userWithLevel.getLevel(), is(userWithLevelRead.getLevel()));
         assertThat(userWithoutLevel.getLevel(), is(userWithoutLevelRead.getLevel()));
@@ -66,8 +61,8 @@ public class UserServiceImplTest extends UserServiceImpl {
 
     @Test
     public void upgradeLevels() {
-        userDao.deleteAll();
-        for(User user : users) userDao.add(user);
+        userService.deleteAll();
+        for(User user : users) userService.add(user);
 
         userService.upgradeLevels();
 
@@ -89,19 +84,6 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
-    public void upgradeAllOrNothing() throws Exception {
-        userDao.deleteAll();
-        for(User user : users) userDao.add(user);
-
-        try {
-            //testUserService.upgradeLevels();
-            this.testUserService.upgradeLevels();
-        } catch(UserServiceImpl.TestUserServiceException e) {}
-
-        //checkLevelUpgraded(users.get(1), false);
-    }
-
-    @Test
     public void transactionSync() {
         userService.deleteAll();
         userService.add(users.get(0));
@@ -109,7 +91,7 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
-        User updateUser = userDao.get(user.getId());
+        User updateUser = userService.get(user.getId());
         if(upgraded) {
             assertThat(updateUser.getLevel(), is(user.getLevel().nextLevel()));
         } else {

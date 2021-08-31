@@ -7,4 +7,5 @@ public interface UserService {
     void deleteAll();
     void update(User user);
     void upgradeLevels();
+    int getCount();
 }
