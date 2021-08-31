@@ -12,22 +12,22 @@
 ">
 
     <!-- Home -->
-<!--    <bean id="dataSource"-->
-<!--          class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
-<!--        <property name="driverClass" value="org.postgresql.Driver" />-->
-<!--        <property name="url" value="jdbc:postgresql://localhost:5432/springtest" />-->
-<!--        <property name="username" value="dcun" />-->
-<!--        <property name="password" value="1234" />-->
-<!--    </bean>-->
-
-    <!-- Company -->
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="org.postgresql.Driver" />
-        <property name="url" value="jdbc:postgresql://localhost:5432/springbootdb" />
-        <property name="username" value="postgres" />
+        <property name="url" value="jdbc:postgresql://localhost:5432/springtest" />
+        <property name="username" value="dcun" />
         <property name="password" value="1234" />
     </bean>
+
+    <!-- Company -->
+<!--    <bean id="dataSource"-->
+<!--          class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
+<!--        <property name="driverClass" value="org.postgresql.Driver" />-->
+<!--        <property name="url" value="jdbc:postgresql://localhost:5432/springbootdb" />-->
+<!--        <property name="username" value="postgres" />-->
+<!--        <property name="password" value="1234" />-->
+<!--    </bean>-->
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
@@ -54,14 +54,18 @@
 
     <bean id="userDao" class="UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
+        <property name="sqlService" ref="sqlService" />
+    </bean>
+
+    <bean id="sqlService" class="SimpleSqlService">
         <property name="sqlMap">
             <map>
-                <entry key="add" value="INSERT INTO auser (id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)" />
-                <entry key="get" value="SELECT * FROM auser WHERE id = ?" />
-                <entry key="del" value="DELETE FROM auser" />
-                <entry key="cnt" value="SELECT COUNT(*) FROM auser" />
-                <entry key="getAll" value="SELECT * FROM auser ORDER BY id" />
-                <entry key="upd" value="UPDATE auser SET name = ?, password = ?, level = ?, login = ?, recommend = ? WHERE id = ?" />
+                <entry key="userAdd" value="INSERT INTO auser (id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)" />
+                <entry key="userGet" value="SELECT * FROM auser WHERE id = ?" />
+                <entry key="userDel" value="DELETE FROM auser" />
+                <entry key="userCnt" value="SELECT COUNT(*) FROM auser" />
+                <entry key="userGetAll" value="SELECT * FROM auser ORDER BY id" />
+                <entry key="userUpd" value="UPDATE auser SET name = ?, password = ?, level = ?, login = ?, recommend = ? WHERE id = ?" />
             </map>
         </property>
     </bean>

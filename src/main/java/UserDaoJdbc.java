@@ -16,6 +16,11 @@ public class UserDaoJdbc implements UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    private SqlService sqlService;
+    public void setSqlService(SqlService sqlService) {
+        this.sqlService = sqlService;
+    }
+
     private RowMapper<User> userRowMapper = (resultSet, i) -> {
         User user = new User();
         user.setId(resultSet.getString("id"));
@@ -27,29 +32,23 @@ public class UserDaoJdbc implements UserDao {
         return user;
     };
 
-    private Map<String, String> sqlMap;
-
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
-    }
-
     public void add(User user) {
-        this.jdbcTemplate.update(this.sqlMap.get("add"), user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
+        this.jdbcTemplate.update(this.sqlService.getSql("userAdd"), user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
     @Override
     public User get(String id) {
-        return this.jdbcTemplate.queryForObject(this.sqlMap.get("get"), new Object[]{id}, this.userRowMapper);
+        return this.jdbcTemplate.queryForObject(this.sqlService.getSql("userGet"), new Object[]{id}, this.userRowMapper);
     }
 
     @Override
     public void deleteAll() {
-        this.jdbcTemplate.update(this.sqlMap.get("del"));
+        this.jdbcTemplate.update(this.sqlService.getSql("userDel"));
     }
 
     @Override
     public int getCount() {
-        return this.jdbcTemplate.query(this.sqlMap.get("cnt"), new ResultSetExtractor<Integer>() {
+        return this.jdbcTemplate.query(this.sqlService.getSql("userCnt"), new ResultSetExtractor<Integer>() {
             @Override
             public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
                 resultSet.next();
@@ -60,11 +59,11 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public List<User> getAll() {
-        return this.jdbcTemplate.query(this.sqlMap.get("getAll"), this.userRowMapper);
+        return this.jdbcTemplate.query(this.sqlService.getSql("userGetAll"), this.userRowMapper);
     }
 
     @Override
     public void update(User user) {
-        this.jdbcTemplate.update(this.sqlMap.get("upd"), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
+        this.jdbcTemplate.update(this.sqlService.getSql("userUpd"), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
     }
 }
