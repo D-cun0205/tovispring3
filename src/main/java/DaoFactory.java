@@ -23,5 +23,4 @@ public class DaoFactory {
         dataSource.setPassword("1234");
         return dataSource;
     }
-
 }

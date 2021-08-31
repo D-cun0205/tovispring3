@@ -1,3 +1,5 @@
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
@@ -15,6 +17,19 @@ public class UserServiceImpl implements UserService {
         if(user.getLevel() == null) user.setLevel(Level.BASIC);
         userDao.add(user);
     }
+
+    @Override
+    public User get(String id) { return userDao.get(id); }
+
+    @Override
+    public List<User> getAll() { return userDao.getAll(); }
+
+    @Override
+    @Transactional
+    public void deleteAll() { userDao.deleteAll(); }
+
+    @Override
+    public void update(User user) { userDao.update(user); }
 
     public void upgradeLevels() {
         List<User> users = userDao.getAll();
@@ -40,13 +55,14 @@ public class UserServiceImpl implements UserService {
         userDao.update(user);
     }
 
-    static class TestUserServiceImpl extends UserServiceImpl {
+    static class TestUserService extends UserServiceImpl {
         private String id = "bbo";
 
         protected void upgradeLevel(User user) {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
         }
+
     }
 
     static class TestUserServiceException extends RuntimeException {}

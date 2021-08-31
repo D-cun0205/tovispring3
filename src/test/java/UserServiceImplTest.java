@@ -1,24 +1,18 @@
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-
-import org.springframework.aop.aspectj.AspectJExpressionPointcut;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/test-applicationContext.xml")
@@ -35,9 +29,6 @@ public class UserServiceImplTest extends UserServiceImpl {
 
     @Autowired
     UserDao userDao;
-
-    @Mock
-    UserDao mockUserDao;
 
     List<User> users;
 
@@ -88,32 +79,17 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
+    @Transactional
+    public void getGetAllUpdate() throws Exception {
+        userService.deleteAll();
+        for(User user : users) userService.add(user);
+        User getUser = userService.get(users.get(0).getId());
+        List<User> getUsers = userService.getAll();
+        userService.update(users.get(1));
+    }
+
+    @Test
     public void upgradeAllOrNothing() throws Exception {
-//        UserServiceImpl.TestUserServiceImpl testUserService = new UserServiceImpl.TestUserServiceImpl();
-//        testUserService.setUserDao(this.userDao);
-
-        //앞전에 모든 테스트를 통합하여 MethodInterceptor를 상속받은 TransactionAdvice를 팩토리 빈설정하여 context getBean으로 호출하여 사용
-//        ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-//        txProxyFactoryBean.setTarget(testUserService);
-//        UserService txUserService = (UserService)txProxyFactoryBean.getObject();
-
-//        TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", TxProxyFactoryBean.class);
-//        //applicationContext에 TxProxyFactoryBean설정을 가져와서 Proxy를 별도로 생성 할 필요없음.
-//        txProxyFactoryBean.setTarget(testUserService);
-//        UserService txUserService = (UserService) txProxyFactoryBean.getObject();
-
-        //applicationContext를 설정하기전에 다이나믹프록시를 세팅하여 사용하는경우
-//        TransactionHandler txHandler = new TransactionHandler();
-//        txHandler.setTarget(testUserService);
-//        txHandler.setTransactionManager(transactionManager);
-//        txHandler.setPattern("upgradeLevels");
-//        UserService txUserService = (UserService) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { UserService.class }, txHandler);
-
-        //TransactionHandler를 사용하지 않고 직접 생성해서 사용했을때
-//        UserServiceTx txUserService = new UserServiceTx();
-//        txUserService.setTransactionManager(this.transactionManager);
-//        txUserService.setUserService(txUserService);
-
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
@@ -126,65 +102,11 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
-    public void methodSignaturePointcut() throws SecurityException, NoSuchMethodException {
-        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        //pointcut.setExpression("execution(public int Target.minus(int,int) throws java.lang.RuntimeException)");
-        pointcut.setExpression("execution(* minus(..))");
-
-        assertThat(pointcut.getClassFilter().matches(Target.class) &&
-                pointcut.getMethodMatcher().matches(Target.class.getMethod("minus", int.class, int.class), null), is(true));
-
-        assertThat(pointcut.getClassFilter().matches(Target.class) &&
-                pointcut.getMethodMatcher().matches(Target.class.getMethod("plus", int.class, int.class), null), is(false));
-
-        assertThat(pointcut.getClassFilter().matches(Bean.class) &&
-                pointcut.getMethodMatcher().matches(Target.class.getMethod("method"), null), is(false));
+    public void transactionSync() {
+        userService.deleteAll();
+        userService.add(users.get(0));
+        userService.add(users.get(1));
     }
-
-    @Test
-    public void pointcut() throws Exception {
-        targetClassPointcutMatches("execution(* *(..))", true, true, true, true, true, true);
-    }
-
-    public void pointcutMatches(String expression, boolean expected, Class<?> clazz, String methodName, Class<?>... args) throws Exception {
-        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression(expression);
-
-        assertThat(pointcut.getClassFilter().matches(clazz) &&
-                pointcut.getMethodMatcher().matches(clazz.getMethod(methodName, args), null), is(expected));
-    }
-
-    public void targetClassPointcutMatches(String expression, boolean... expected) throws Exception {
-        pointcutMatches(expression, expected[0], Target.class, "hello");
-        pointcutMatches(expression, expected[1], Target.class, "hello", String.class);
-        pointcutMatches(expression, expected[2], Target.class, "plus", int.class, int.class);
-        pointcutMatches(expression, expected[3], Target.class, "minus", int.class, int.class);
-        pointcutMatches(expression, expected[4], Target.class, "method");
-        pointcutMatches(expression, expected[5], Bean.class, "method");
-    }
-
-// Spring Framework에서 권하는 단위테스트에 필요한 mokito 툴 사용법 6장 초반부에서 다루고 다시 사용하지않으므로 주석처리
-//    @Test
-//    public void mockUpgradeLevels() throws Exception {
-//        UserServiceImpl userServiceImpl = new UserServiceImpl();
-//
-//        UserDao mockUserDao = mock(UserDao.class); //가짜 UserDao 생성
-//        when(mockUserDao.getAll()).thenReturn(this.users); //getAll이라는 메소드가 호출되면 users에서 값을 세팅하도록
-//        userServiceImpl.setUserDao(mockUserDao); // UserServiceImpl에 가짜객체를 DI해줌.
-//
-//        userServiceImpl.upgradeLevels();
-//
-//        // times() : method 호출 횟수 검증
-//        // any() : 파라미터 내용 무시상태로 호출 횟수 확인
-//        verify(mockUserDao, times(2)).update(any(User.class)); //mockUserDao의 update메소드가 2번 호출됬는지 확인
-//        verify(mockUserDao, times(2)).update(any(User.class));
-//        //users.get(1)에 해당하는 두번째사용자가 update메소드가 호출된적이 있는지?
-//        verify(mockUserDao).update(users.get(1));
-//        assertThat(users.get(1).getLevel(), is(Level.SILVER));
-//        //users.get(1)에 해당하는 네번째사용자가 update메소드가 호출된적이 있는지?
-//        verify(mockUserDao).update(users.get(3));
-//        assertThat(users.get(3).getLevel(), is(Level.GOLD));
-//    }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userDao.get(user.getId());

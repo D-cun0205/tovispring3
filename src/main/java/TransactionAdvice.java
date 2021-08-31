@@ -1,12 +1,8 @@
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.cglib.proxy.MethodProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-
-import java.lang.reflect.Method;
 
 public class TransactionAdvice implements MethodInterceptor {
 
