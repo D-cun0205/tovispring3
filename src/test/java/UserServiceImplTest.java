@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import spring.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,14 +14,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/test-applicationContext.xml")
+@ContextConfiguration(classes = { AppContext.class, TestAppContext.class })
 public class UserServiceImplTest extends UserServiceImpl {
 
     @Autowired
     UserService userService;
 
     @Autowired
-    UserDaoJdbc userDao;
+    UserDao userDao;
 
     List<User> users;
 

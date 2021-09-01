@@ -1,3 +1,5 @@
+package spring;
+
 import java.util.Map;
 
 public class SimpleSqlService implements SqlService {

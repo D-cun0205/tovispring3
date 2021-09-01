@@ -1,3 +1,5 @@
+package spring;
+
 public class User {
 
     String id;

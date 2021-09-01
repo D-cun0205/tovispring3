@@ -1,11 +1,12 @@
+package spring;
+
 import java.util.List;
 
-public interface UserService {
+public interface UserDao {
     void add(User user);
     User get(String id);
-    List<User> getAll();
     void deleteAll();
-    void update(User user);
-    void upgradeLevels();
     int getCount();
+    List<User> getAll();
+    void update(User user);
 }

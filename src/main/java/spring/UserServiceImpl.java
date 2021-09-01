@@ -1,11 +1,12 @@
+package spring;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
+@Service("userService")
 public class UserServiceImpl implements UserService {
 
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
@@ -13,10 +14,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserDao userDao;
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     public void add(User user) {
         if(user.getLevel() == null) user.setLevel(Level.BASIC);
@@ -54,7 +51,7 @@ public class UserServiceImpl implements UserService {
             case BASIC: return (user.getLogin() >= MIN_LOGCOUNT_FOR_SILVER);
             case SILVER: return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
             case GOLD: return false;
-            default: throw new IllegalArgumentException("Unknown Level : " + currentLevel);
+            default: throw new IllegalArgumentException("Unknown spring.Level : " + currentLevel);
         }
     }
 
@@ -70,7 +67,6 @@ public class UserServiceImpl implements UserService {
             if(user.getId().equals(this.id)) throw new TestUserServiceException();
             super.upgradeLevel(user);
         }
-
     }
 
     static class TestUserServiceException extends RuntimeException {}
