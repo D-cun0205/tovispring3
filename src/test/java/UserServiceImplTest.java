@@ -1,3 +1,5 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -5,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 import spring.*;
 
 import java.util.Arrays;
@@ -17,6 +18,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { AppContext.class, TestAppContext.class })
 public class UserServiceImplTest extends UserServiceImpl {
+
+    private Logger logger = LogManager.getLogger(UserServiceImplTest.class);
 
     @Autowired
     UserService userService;
@@ -76,20 +79,18 @@ public class UserServiceImplTest extends UserServiceImpl {
     }
 
     @Test
-    @Transactional
-    public void getGetAllUpdate() throws Exception {
-        userService.deleteAll();
-        for(User user : users) userService.add(user);
-        User getUser = userService.get(users.get(0).getId());
-        List<User> getUsers = userService.getAll();
-        userService.update(users.get(1));
-    }
-
-    @Test
     public void transactionSync() {
         userService.deleteAll();
         userService.add(users.get(0));
         userService.add(users.get(1));
+    }
+
+    @Test
+    public void loggingAnyTest() {
+        logger.debug("[debug] log!");
+        logger.info("[info] log!");
+        logger.warn("[warn] log!");
+        logger.error("[error] log!");
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
