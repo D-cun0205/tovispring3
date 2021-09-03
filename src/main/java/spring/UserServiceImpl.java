@@ -48,9 +48,9 @@ public class UserServiceImpl implements UserService {
     private boolean canUpgradeLevel(User user) {
         Level currentLevel = user.getLevel();
         switch (currentLevel) {
-            case BASIC: return (user.getLogin() >= MIN_LOGCOUNT_FOR_SILVER);
-            case SILVER: return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
-            case GOLD: return false;
+            case Level.BASIC: return (user.getLogin() >= MIN_LOGCOUNT_FOR_SILVER);
+            case Level.SILVER: return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
+            case Level.GOLD: return false;
             default: throw new IllegalArgumentException("Unknown spring.Level : " + currentLevel);
         }
     }

@@ -1,3 +1,4 @@
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,8 +57,8 @@ public class UserServiceImplTest extends UserServiceImpl {
         User userWithLevelRead = userService.get(userWithLevel.getId());
         User userWithoutLevelRead = userService.get(userWithoutLevel.getId());
 
-        assertThat(userWithLevel.getLevel(), is(userWithLevelRead.getLevel()));
-        assertThat(userWithoutLevel.getLevel(), is(userWithoutLevelRead.getLevel()));
+        assertThat(userWithLevel.getLevel(), CoreMatchers.is(userWithLevelRead.getLevel()));
+        assertThat(userWithoutLevel.getLevel(), CoreMatchers.is(userWithoutLevelRead.getLevel()));
     }
 
     @Test
@@ -94,9 +95,9 @@ public class UserServiceImplTest extends UserServiceImpl {
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userService.get(user.getId());
         if(upgraded) {
-            assertThat(updateUser.getLevel(), is(user.getLevel().nextLevel()));
+            assertThat(updateUser.getLevel(), CoreMatchers.is(user.getLevel().nextLevel()));
         } else {
-            assertThat(updateUser.getLevel(), is(user.getLevel()));
+            assertThat(updateUser.getLevel(), CoreMatchers.is(user.getLevel()));
         }
     }
 
