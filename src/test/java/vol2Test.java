@@ -5,14 +5,13 @@ import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import springvol2.Hello;
-import springvol2.Printer;
-import springvol2.StringPrinter;
+import springvol2.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -25,7 +24,6 @@ public class vol2Test {
     public void setUp() {
         basePath = StringUtils.cleanPath(ClassUtils.classPackageAsResourcePath(getClass())) + "/";
     }
-
 
     @Test
     public void test() {
@@ -96,5 +94,27 @@ public class vol2Test {
         hello.print();
 
         assertThat(printer.toString(), is("Hello child"));
+    }
+
+    @Test
+    public void getAnnotationBean() {
+        AnnotationConfigApplicationContext acac = new AnnotationConfigApplicationContext(AnnotatedHelloConfig.class);
+
+        AnnotatedHello getBeanHello = acac.getBean("annotatedHello", AnnotatedHello.class);
+        assertThat(getBeanHello, is(notNullValue()));
+
+        AnnotatedHelloConfig config = acac.getBean("annotatedHelloConfig", AnnotatedHelloConfig.class);
+        assertThat(config, is(notNullValue()));
+    }
+
+    @Test
+    public void getDifHelloPrinter() {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(HelloConfig.class);
+        Hello hello1 = ctx.getBean("hello", Hello.class);
+        assertThat(hello1, is(notNullValue()));
+
+        Hello hello2 = ctx.getBean("hello2", Hello.class);
+        assertThat(hello2, is(notNullValue()));
+
     }
 }

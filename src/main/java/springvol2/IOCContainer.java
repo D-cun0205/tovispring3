@@ -31,4 +31,16 @@ public class IOCContainer {
     //클라이언트 요청 -> 서블릿 컨테이너(웹어플리케이션) -> WebApplicationContext 생성 -> 설정메타, POJO클래스 확인하여 클래스생성 및 DI 적용
     //DispatcherServlet : 어플리케이션컨텍스트 생성, 설정메타정보에 대한 초기화, 각 요청에 맞는 빈을 찾아서 이를 실행해줌
     //WebApplicationCotext
+
+    //스프링 웹 기능을 지원하는 프론트 컨트롤러 서블릿 : DispatcherServlet
+    //DispatcherServlet은 web.xml에서 등록해서 사용하는 서블릿
+    //DispatcherServlet은 웹어플리케이션 레벨에 등록되며 등록 될 시 루트어플리케이션컨텍스트를 찾아서 루트를 부모컨텍스트로 사용한다.
+    //web.xml파일에 DispatcherServlet이 servlet태그안에 선언되어있음.
+    //DispatcherServlet을 사용할 때 네임스페이스를 주의해서 사용하는이유는 설정한 네임에 해당하는 독립적인 서블릿을 가지게 된다.
+    //DispatcherServlet이 생성하는 applicationContext는 디스패처서블릿의 네임으로 인해 구분되어진다.
+    //웹어플리케이션이 기동되면 web.xml의 서블릿 설정값을 통해 WEB_INF 하위에 서블릿에 설정한 네임 + '-servlet.xml'로 파일을 생성한다.
+
+    //<context-annotation-config : @Resource와 같은 애노테이션 의존관계정보를 읽어서 메타정보를 추가해주는 기능을 가진 빈 후처리기를 등록
+    //<context-component-scan : 빈 스캐닝을 통한 빈 등록 방법 지정
+    //AnnotationConfigApplicationContext : 빈 스캐너, 애노테이션 의존관계 정보를 읽는 후처리기 두가지를 내장한 어플리케이션컨텍스트 사용
 }
