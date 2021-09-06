@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration status="DEBUG">
+    <Appenders>
+        <!-- 콜솔 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd hh:mm:ss} %5p [%c] %m%n"/>
+        </Console>
+
+        <!-- 파일  -->
+        <RollingFile name ="RollingFile">
+            <FileName>C:/PDF/20191203.txt</FileName>
+            <FilePattern>C:/PDF/%d{yyyy-MM-dd-hh-mm}/20191203.zip</FilePattern>
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name ="RollingFileError">
+            <FileName>C:/PDF/20191203_error.txt</FileName>
+            <FilePattern>C:/PDF/%d{yyyy-MM-dd-hh-mm}/20191203_error.zip</FilePattern>
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+
+    <loggers>
+        <root level="debug" additivity="true">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="RollingFileError" level = "ERROR"/>
+        </root>
+    </loggers>
+</configuration>
