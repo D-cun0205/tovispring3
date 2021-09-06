@@ -14,7 +14,7 @@ public class HelloConfig {
     public Hello hello() {
         Hello hello = new Hello();
         hello.setName("Spring");
-        hello.setPrinter(this.printer);
+        //hello.setPrinter(this.printer);
         return hello;
     }
 
@@ -22,7 +22,7 @@ public class HelloConfig {
     public Hello hello2() {
         Hello hello = new Hello();
         hello.setName("Spring2");
-        hello.setPrinter(this.printer);
+        //hello.setPrinter(this.printer);
         return hello;
     }
 
