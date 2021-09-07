@@ -6,10 +6,9 @@ import java.util.Properties;
 public class MailTest {
 
     public void naverMailSend() {
-        //IMAP, SMTP의 차이가 궁금하다
         final String host = "smtp.naver.com";
-        final String user = "twossic@naver.com";
-        final String password = "N6208559025@#$";
+        final String user = "#####@naver.com";
+        final String password = "#####";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", host);
@@ -25,7 +24,7 @@ public class MailTest {
         try {
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(user));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress("mmeo0205@gmail.com"));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress("#####@gmail.com"));
             message.setSubject("This is Subject.");
             message.setText("This is Contents");
 
@@ -36,8 +35,13 @@ public class MailTest {
         }
     }
 
+    public void googleMailSend() {
+        final String user = "";
+    }
+
     public static void main(String[] args) {
         MailTest mt = new MailTest();
         mt.naverMailSend();
+        mt.googleMailSend();
     }
 }
