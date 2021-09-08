@@ -85,14 +85,6 @@ public class UserServiceImplTest extends UserServiceImpl {
         userService.add(users.get(1));
     }
 
-    @Test
-    public void loggingAnyTest() {
-        logger.debug("[debug] log!");
-        logger.info("[info] log!");
-        logger.warn("[warn] log!");
-        logger.error("[error] log!");
-    }
-
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userService.get(user.getId());
         if(upgraded) {
