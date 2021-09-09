@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
+
+    <!--
+        persistence.xml파일이 META-INF 하위에 위치할 경우 별도의 위치 설정 없이 자동 스캐닝
+        META-INF의 궁금증...
+        META-INF 폴더는 manifest(사전 뜻 : 명백한?) 파일을 담는 용도로 활용
+        manifest파일은 jar파일의 사용메뉴얼, 스펙을 가지고있는 사용설명서와 비슷한 개념
+        정리하여 META-INF 폴더는 jar파일 생성시 일종의 사용설명서인 manifest파일을 담기위한 폴더
+        프로젝트를 jar로 패키징하여 배포할 수 있으므로 관련 설정 파일을 META-INF 하위에 보관
+    -->
+
     <!-- 영속성 유닛, 연결 할 데이터베이스당 하나의 영속성 유닛 등록, 고유이름 : jpabook 설정 -->
     <persistence-unit name="jpabook">
-        <!--
-            환경에 따라서 엔티티클래스를 인식하지 못 할 경우
-            <class>jpabook.start.Member</class> 를 직접 입력하여 지정해 줄 수 있다.
-        -->
-        <properties>
-            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+    <!--
+        환경에 따라서 엔티티클래스를 인식하지 못 할 경우
+        <class>jpabook.start.Member</class> 를 직접 입력하여 지정해 줄 수 있다.
+    -->
+    <properties>
+        <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
             <property name="javax.persistence.jdbc.user" value="sa"/>
             <property name="javax.persistence.jdbc.password" value=""/>
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
