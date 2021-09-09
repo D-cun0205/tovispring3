@@ -1,5 +1,6 @@
 package springvol2;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,10 @@ public class Hello {
 
     @Resource(name = "printer")
     Printer printer;
+
+    public void setPrinter(StringPrinter printer) {
+        this.printer = printer;
+    }
 
     public String sayHello() {
         return "Hello " +  name;

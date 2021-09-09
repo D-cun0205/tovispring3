@@ -8,4 +8,5 @@
         <property name="name" value="child" />
         <property name="printer" ref="printer" />
     </bean>
+    <bean id="printer" class="springvol2.StringPrinter"/>
 </beans>
