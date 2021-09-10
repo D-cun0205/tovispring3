@@ -31,6 +31,16 @@
             <property name="hibernate.format_sql" value="true"/> <!-- 하이버네이트가 실행한 SQL 출력내용 정렬 -->
             <property name="hibernate.use_sql_comments" value="true"/> <!-- SQL 출력시 주석 포함 -->
             <property name="hibernate.id.new_generator_mappings" value="true"/> <!-- JPA 표준에 맞춘 새로운 키 생성 전략 --> <!-- 확인필요 -->
+
+            <!--
+                운영시 사용하지 말자
+                create : 기존 테이블을 삭제하고 새로 생성 (DROP + CREATE)
+                create-drop : create 속성에 애플리케이션 종료 시 DDL DROP
+                update : 테이블과 엔티티 매핑정보 비교해서 변경 사항만 수정
+                validate : update 옵션에서 수정 대신 경고를 띄우며 애플리케이션을 실행 안함
+                none : 사용안함, none이 아닌 없는 옵션 값을 줘도 되며 none도 없는 옵션 값
+            -->
+            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 애플리케이션 실행 시점에 데이터베이스 테이블 자동생성 -->
         </properties>
     </persistence-unit>
 </persistence>
