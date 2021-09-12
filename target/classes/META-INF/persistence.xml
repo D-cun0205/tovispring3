@@ -30,7 +30,21 @@
             <property name="hibernate.show_sql" value="true"/> <!-- 하이버네이트가 실행한 SQL 출력 -->
             <property name="hibernate.format_sql" value="true"/> <!-- 하이버네이트가 실행한 SQL 출력내용 정렬 -->
             <property name="hibernate.use_sql_comments" value="true"/> <!-- SQL 출력시 주석 포함 -->
-            <property name="hibernate.id.new_generator_mappings" value="true"/> <!-- JPA 표준에 맞춘 새로운 키 생성 전략 --> <!-- 확인필요 -->
+            <!-- JPA 표준에 맞춘 새로운 키 생성 전략 -->
+            <property name="hibernate.id.new_generator_mappings" value="true"/>
+
+            <!--
+                운영시 사용하지 말자
+                JPA 2.1버전에서는 스키마 자동 생성 기능을 표준으로 지원하나 하이버네이트에 hbm2ddl.auto 속성이 지원하는 update, validate는 지원하지 않음
+                create : 기존 테이블을 삭제하고 새로 생성 (DROP + CREATE) *운영서버 사용금지*
+                create-drop : create 속성에 애플리케이션 종료 시 DDL DROP *운영서버 사용금지*
+                update : 테이블과 엔티티 매핑정보 비교해서 변경 사항만 수정 *운영서버 사용금지*
+                validate : update 옵션에서 수정 대신 경고를 띄우며 애플리케이션을 실행 안함
+                none : 사용안함, none이 아닌 없는 옵션 값을 줘도 되며 none도 없는 옵션 값
+            -->
+            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 애플리케이션 실행 시점에 데이터베이스 테이블 자동생성 -->
+            <!-- ImprovedNamingStrategy클래스를 사용하면 테이블 명이나 컬럼 명 생략 시 엔티티의 필드명 기준 카멜표기법을 언더스코어 표기법으로 매핑 -->
+            <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>
         </properties>
     </persistence-unit>
 </persistence>
