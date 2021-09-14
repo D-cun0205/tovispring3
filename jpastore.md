@@ -71,6 +71,9 @@ public class Member {
     private String street;
     private String zipcode;
 
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders = new ArrayList<>();
+    
     public Long getId() {
         return id;
     }
@@ -110,6 +113,14 @@ public class Member {
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 }
 
 package jpastore;
@@ -118,6 +129,7 @@ package jpastore;
         import java.util.Date;
 
 @Entity
+@Table(name = "ORDERS")
 public class Order {
 
     @Id
@@ -125,6 +137,10 @@ public class Order {
     @Column(name = "ORDER_ID")
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
+    
     @Column(name = "MEMBER_ID") //Member Primary Key의 복합키 설정
     private Long memberId;
 
@@ -133,7 +149,15 @@ public class Order {
 
     @Enumerated(EnumType.STRING) //Enum(ORDER, CANCEL) 매핑
     private OrderStatus status;
+    
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> orderItems = new ArrayList<>();
 
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.add(orderItem);
+        orderItem.setOrder(this);
+    }
+    
     public Long getId() {
         return id;
     }
@@ -165,6 +189,26 @@ public class Order {
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        if(this.member != null) {
+            this.member.getOrders().remove(this);
+        }
+        this.member = member;
+        member.getOrders().add(this);
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrders(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }
 
 package jpastore;
@@ -179,12 +223,14 @@ public class OrderItem {
     @GeneratedValue
     @Column(name = "ORDER_ITEM_ID")
     private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "ITEM_ID")
+    private Item item;
 
-    @Column(name = "ITEM_ID") //상품 Primary Key의 복합키 설정
-    private Long itemId;
-
-    @Column(name = "ORDER_ID") //주문 Primary Key의 복합키 설정
-    private Long orderId;
+    @ManyToOne
+    @JoinColumn(name = "ORDER_ID")
+    private Order orderId;
 
     private int orderPrice; //주문 가격 (@Column 설정 없으므로 NOT NULL 자동 설정)
     private int count; //주문 수량 (@Column 설정 없으므로 NOT NULL 자동 설정)
@@ -197,20 +243,20 @@ public class OrderItem {
         this.id = id;
     }
 
-    public Long getItemId() {
-        return itemId;
+    public Item getItem() {
+        return item;
     }
 
-    public void setItemId(Long itemId) {
-        this.itemId = itemId;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
-    public Long getOrderId() {
-        return orderId;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public int getOrderPrice() {
