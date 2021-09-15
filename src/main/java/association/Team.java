@@ -1,36 +1,35 @@
 package association;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "team")
 public class Team {
 
     @Id
+    @GeneratedValue
     @Column(name = "TEAM_ID")
-    private String id;
+    private long id;
 
     private String name;
 
-    public Team(String id, String name) {
-        this.id = id;
+    public Team(String name) {
         this.name = name;
     }
 
     public Team() {}
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany
+    @JoinColumn(name = "TEAM_ID")
     private List<Member> members = new ArrayList<>();
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
