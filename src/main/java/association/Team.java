@@ -4,13 +4,13 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "team")
+//@Entity
+//@Table(name = "team")
 public class Team {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "TEAM_ID")
+//    @Id
+//    @GeneratedValue
+//    @Column(name = "TEAM_ID")
     private long id;
 
     private String name;
@@ -21,8 +21,8 @@ public class Team {
 
     public Team() {}
 
-    @OneToMany
-    @JoinColumn(name = "TEAM_ID")
+//    @OneToMany
+//    @JoinColumn(name = "TEAM_ID")
     private List<Member> members = new ArrayList<>();
 
     public long getId() {

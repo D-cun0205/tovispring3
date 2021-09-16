@@ -2,17 +2,17 @@ package association;
 
 import javax.persistence.*;
 
-@Entity
+//@Entity
 public class Locker {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "LOCKER_ID")
+//    @Id
+//    @GeneratedValue
+//    @Column(name = "LOCKER_ID")
     private Long id;
 
     private String name;
 
-    @OneToOne(mappedBy = "locker")
+//    @OneToOne(mappedBy = "locker")
     private Member member;
 
     public Long getId() {
