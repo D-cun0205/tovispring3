@@ -1,7 +1,9 @@
 package association;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 
 public class AssociationMain {
 
@@ -14,7 +16,7 @@ public class AssociationMain {
         em.persist(member1);
 
         Product product1 = new Product();
-        product1.setId("product1");
+        product1.setId("productA");
         product1.setName("상품1");
         em.persist(product1);
 
@@ -32,9 +34,9 @@ public class AssociationMain {
         Member member = order.getMember();
         Product product = order.getProduct();
 
+        System.out.println(order.getOrderAmount());
         System.out.println("member : " + member.getUsername());
         System.out.println("product : " + product.getName());
-        System.out.println("orderAmount : " + order.getOrderAmount());
     }
 
     public static void main(String[] args) {
@@ -43,6 +45,7 @@ public class AssociationMain {
 
         transaction.begin();
         save(em);
+        //find(em);
         transaction.commit();
         em.close();
         emf.close();

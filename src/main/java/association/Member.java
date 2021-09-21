@@ -8,12 +8,12 @@ import java.util.List;
 public class Member {
 
     @Id
-    @Column(name = "MEMBER_ID")
+    @Column(name = "MEMBER_ID_ID")
     private String id;
     private String username;
 
     @OneToMany(mappedBy = "member")
-    private List<MemberProduct> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -31,11 +31,11 @@ public class Member {
         this.username = username;
     }
 
-    public List<MemberProduct> getOrders() {
+    public List<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<MemberProduct> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 }

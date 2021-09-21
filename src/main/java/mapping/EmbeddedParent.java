@@ -1,22 +1,22 @@
-package association;
+package mapping;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Product {
+public class EmbeddedParent {
 
-    @Id
-    @Column(name = "PRODUCT_ID_ID")
-    private String id;
+    @EmbeddedId
+    private EmbeddedParentId id;
+
     private String name;
 
-    public String getId() {
+    public EmbeddedParentId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(EmbeddedParentId id) {
         this.id = id;
     }
 
@@ -27,5 +27,4 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
-
 }
