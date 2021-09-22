@@ -43,6 +43,36 @@ public class ProxyMain {
     *   nullable 을 설정하지 않은상태에서 내부조인이 실행되면 데이터가 조회되지 않은 문제점을 막기위해서
     *   외부조인을 강제하는데 성능적으로 보았을 때 내부조인이 성능최적화에 유리하며 @JoinColumn 속성으로
     *   nullable = false or Optional : false로 하면 내부조인을 강제하여 성능을 최적화 할 수 있다
+    *
+    *   지연 로딩 : 연관된 엔티티를 프록시로 조회한다. 프록시를 실제 사용할 때 초기화하면서 데이터베이스에 조회
+    *   즉시 로딩 : 연관된 엔티티를 즉시 조회한다. 하이버네이트는 가능하면 SQL조인을 사용해서 한번에 조회한다
+    * */
+
+    /*  영속성 전이 저장
+    *   @OneToMany(mappedBy = "parent", cascade = CascadeType.PERSIST)
+    *   cascade = CascadeType.PERSIST 를 설정하여 영속성 전이 저장을 사용하지 않고 등록하는 방법은
+    *   부모 엔티티를 저장한 후 자식엔티티에 연관관계를 설정하여 자식엔티티도 저장 후 영속성 관리를 하게 되는데
+    *   영속성 전이를 사용하면 연관관계를 설정하기위한 부분은 동일하게 사용해야 하지만 부모와 자식들의 저장이 한번에 이뤄질수있다.
+    *
+    *   영속성 전이 삭제
+    *   @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
+    *   영속성 전이를 사용하기 전에 삭제를 진행하려면 자식엔티티 삭제를 진행 후 부모 엔티티의 삭제를 진행하여 영속성을 제거하는데
+    *   영속성 전이 삭제가 옵션에 등록돠어있고 부모 엔티티만 삭제를 진행하면 자식 엔티티도 함께 삭제된다
+    *   삭제 순서는 외래 키 제약조건을 고려 자식을 먼저 삭제 후 부모 삭제
+    *
+    *   여러 속성을 같이 사용할 때
+    *   @OneToMany(mappedBy = "parent", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }
+    *
+    *   고아객체
+    *   부모 엔티티와 연관관계가 끊어진 자식 엔티티를 자동으로 삭제하는 기능
+    *   @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    *   orphanRemoval = true < 고아객체 설정을 한 후
+    *   Parent parent = em.find(Parent.class, 1L);
+    *   parent.getChildren().remove(0); 으로 자식 엔티티를 제거하면 연관관계가 끊어진 자식 엔티티를 제거한다
+    *   해당 기능이 발생되는 시점은 영속성 컨텍스트의 플러시할 때 적용되며 이 시점에 DELETE SQL이 실행된다
+    *   모든 자식 엔티티를 제거하는 방법으로 컬렉션을 비우면 되며 parent.getChildren().clear(); 실행
+    *   고아객체는 OenToOne, OneToMany에만 사용할 수 있으며 특정엔티티를 개인이 소유할 경우에만 삭제가능하다
+    *   고아객체 설정으로 삭제된 엔티티를 다른 엔티티가 참조하면 참조에러가 발생할 수 있기 때문이다
     * */
 
     public static void main(String[] args) {
