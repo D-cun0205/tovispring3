@@ -1,29 +1,30 @@
-package association;
+package ooql;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
+@NamedQuery(
+        name = "Member.findByUsername",
+        query = "select m from Member m where m.username = :username")
 public class Member {
 
     @Id
-    @Column(name = "MEMBER_ID_ID")
-    private String id;
+    @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
+
+    @Column(name = "name")
     private String username;
 
     @ManyToOne
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
-
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -33,14 +34,6 @@ public class Member {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 
     public Team getTeam() {

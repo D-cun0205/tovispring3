@@ -9,7 +9,9 @@ public class ValueTypeMain {
 
     static EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabook");
 
-
+    static void useValueType(EntityManager em) {
+        Member member = new Member();
+    }
 
     public static void main(String[] args) {
         EntityManager em = emf.createEntityManager();
