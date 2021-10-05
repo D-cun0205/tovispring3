@@ -90,7 +90,11 @@ public class ObjectOQLMain {
     }
 
     static void nativeFun(EntityManager em) {
-
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<Member> m = query.from(Member.class);
+        Expression<Long> function = cb.function("SUM", Long.class, m.get("age"));
+        query.select(function);
     }
 
     public static void main(String[] args) {
