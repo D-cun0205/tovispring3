@@ -42,7 +42,7 @@
                 validate : update 옵션에서 수정 대신 경고를 띄우며 애플리케이션을 실행 안함
                 none : 사용안함, none이 아닌 없는 옵션 값을 줘도 되며 none도 없는 옵션 값
             -->
-            <property name="hibernate.hbm2ddl.auto" value="none"/> <!-- 애플리케이션 실행 시점에 데이터베이스 테이블 자동생성 -->
+            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 애플리케이션 실행 시점에 데이터베이스 테이블 자동생성 -->
             <!-- ImprovedNamingStrategy클래스를 사용하면 테이블 명이나 컬럼 명 생략 시 엔티티의 필드명 기준 카멜표기법을 언더스코어 표기법으로 매핑 -->
             <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>
         </properties>
