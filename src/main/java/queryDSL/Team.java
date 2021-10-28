@@ -1,9 +1,6 @@
 package queryDSL;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Setter
 public class Team {
 
     @Id @GeneratedValue
@@ -23,7 +21,8 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 
-    public Team(String name) {
-        this.name = name;
-    }
+//    public void add(Member member) {
+//        member.setTeam(this);
+//        this.members.add(member);
+//    }
 }

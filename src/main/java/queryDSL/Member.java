@@ -1,9 +1,6 @@
 package queryDSL;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +8,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Setter
 public class Member {
 
     @Id @GeneratedValue
@@ -22,10 +20,9 @@ public class Member {
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
-    public Member(String username, int age, Team team) {
-        this.username = username;
-        this.age = age;
-        if(team != null)
-            team.getMembers().add(this);
+    public void add(Team team) {
+        this.team = team;
+        team.getMembers().add(this);
     }
+
 }
