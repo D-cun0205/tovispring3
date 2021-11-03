@@ -1,50 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.1">
+    <persistence-unit name="jpa"> <!-- 영속성 유닛이며 데이터베이스당 하나의 영속성 유닛 등록 -->
+        <properties>
+            <!-- 필수 속성 -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/> <!-- 드라이버 -->
+            <property name="javax.persistence.jdbc.user" value="sa"/> <!-- DB접속 아이디 -->
+            <property name="javax.persistence.jdbc.password" value=""/> <!-- DB접속 패스워드 -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/> <!-- DB접속 URL -->
 
-    <!--
-        persistence.xml파일이 META-INF 하위에 위치할 경우 별도의 위치 설정 없이 자동 스캐닝
-        META-INF의 궁금증...
-        META-INF 폴더는 manifest(사전 뜻 : 명백한?) 파일을 담는 용도로 활용
-        manifest파일은 jar파일의 사용메뉴얼, 스펙을 가지고있는 사용설명서와 비슷한 개념
-        정리하여 META-INF 폴더는 jar파일 생성시 일종의 사용설명서인 manifest파일을 담기위한 폴더
-        프로젝트를 jar로 패키징하여 배포할 수 있으므로 관련 설정 파일을 META-INF 하위에 보관
-    -->
-
-    <!-- 영속성 유닛, 연결 할 데이터베이스당 하나의 영속성 유닛 등록, 고유이름 : jpabook 설정 -->
-    <persistence-unit name="jpabook">
-    <!--
-        환경에 따라서 엔티티클래스를 인식하지 못 할 경우
-        <class>jpabook.start.Member</class> 를 직접 입력하여 지정해 줄 수 있다.
-    -->
-    <properties>
-        <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
-            <property name="javax.persistence.jdbc.user" value="sa"/>
-            <property name="javax.persistence.jdbc.password" value=""/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/>
-            <!--
-                방언 : SQL 표준을 지키지 않거나 특정 데이터베이스만의 고유한 기능
-                방언의 문제점을 해결하기 위해서 JPA 구현체들은 다양한 데이터베이스 방언 클래스를 지원
-            -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/> <!-- 데이터베이스 방언 설정 -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/> <!-- DB방언 설정 -->
             <!-- 옵션 -->
-            <property name="hibernate.show_sql" value="true"/> <!-- 하이버네이트가 실행한 SQL 출력 -->
-            <property name="hibernate.format_sql" value="true"/> <!-- 하이버네이트가 실행한 SQL 출력내용 정렬 -->
-            <property name="hibernate.use_sql_comments" value="true"/> <!-- SQL 출력시 주석 포함 -->
-            <!-- JPA 표준에 맞춘 새로운 키 생성 전략 -->
-            <property name="hibernate.id.new_generator_mappings" value="true"/>
-
+            <property name="hibernate.show_sql" value="true"/> <!-- 실행한 SQL 출력 -->
+            <property name="hibernate.format_sql" value="true"/> <!-- 실행한 SQL을 출력하기 전에 정렬 -->
+            <property name="hibernate.use_sql_comments" value="true"/> <!-- SQL 출력 시 주석 포함 -->
             <!--
-                운영시 사용하지 말자
-                JPA 2.1버전에서는 스키마 자동 생성 기능을 표준으로 지원하나 하이버네이트에 hbm2ddl.auto 속성이 지원하는 update, validate는 지원하지 않음
-                create : 기존 테이블을 삭제하고 새로 생성 (DROP + CREATE) *운영서버 사용금지*
-                create-drop : create 속성에 애플리케이션 종료 시 DDL DROP *운영서버 사용금지*
-                update : 테이블과 엔티티 매핑정보 비교해서 변경 사항만 수정 *운영서버 사용금지*
-                validate : update 옵션에서 수정 대신 경고를 띄우며 애플리케이션을 실행 안함
-                none : 사용안함, none이 아닌 없는 옵션 값을 줘도 되며 none도 없는 옵션 값
+                JPA표준에 맞춘 새로운 키 생성 전략
+                식별자 필드에 어노테이션으로 키 생성방식을 정할 수 있으며
+                @GeneratedValue의 전략속성값에 맞춰서 생성
+                사용 이유는 DB종류마다 시퀀스 생성 표현이 다르기 때문
             -->
-            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 애플리케이션 실행 시점에 데이터베이스 테이블 자동생성 -->
-            <!-- ImprovedNamingStrategy클래스를 사용하면 테이블 명이나 컬럼 명 생략 시 엔티티의 필드명 기준 카멜표기법을 언더스코어 표기법으로 매핑 -->
-            <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/>
+            <property name="hibernate.id.new_generator_mappings" value="true"/> <!-- 식별자 필드 키 생성 전략 -->
+            <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 어플리케이션 실행 시점에 테이블을 새로 생성 -->
+            <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/> <!-- 카멜표기법을 스네이크표기법과 매핑 -->
         </properties>
     </persistence-unit>
 </persistence>
