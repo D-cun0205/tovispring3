@@ -19,7 +19,7 @@
                 @GeneratedValue의 전략속성값에 맞춰서 생성
                 사용 이유는 DB종류마다 시퀀스 생성 표현이 다르기 때문
             -->
-            <property name="hibernate.id.new_generator_mappings" value="true"/>
+            <property name="hibernate.id.new_generator_mappings" value="true"/> <!-- 식별자 필드 키 생성 전략 -->
             <property name="hibernate.hbm2ddl.auto" value="create"/> <!-- 어플리케이션 실행 시점에 테이블을 새로 생성 -->
             <property name="hibernate.ejb.naming_strategy" value="org.hibernate.cfg.ImprovedNamingStrategy"/> <!-- 카멜표기법을 스네이크표기법과 매핑 -->
         </properties>

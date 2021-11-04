@@ -1,45 +1,47 @@
 package queryDSL;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
 
-/** JPA에게 테이블과 매핑한다고 알려주며 엔티티클래스라고 칭함 */
 @Entity
-/** 엔티티클래스에 매핑할 테이블 정보 전달 */
-@Table(name = "MEMBER", uniqueConstraints = {@UniqueConstraint(
-        name = "NAME_AGE_UNIQUE",
-        columnNames = {"NAME", "AGE"}
-)})
+@NoArgsConstructor
 @Getter
 @Setter
 public class Member {
 
-    /** 엔티티클래스의 필드를 테이블의 기본키(Primary Key)에 매핑하며 식별자 필드라고 칭함 */
     @Id
-    /** 필드를 테이블 컬럼에 매핑한다 */
-    @Column(name = "ID")
+    @Column(name = "MEMEBER_ID")
     private String id;
-    @Column(name = "NAME", nullable = false, length = 10)
+
     private String username;
 
-    /**
-     * @Column을 사용하지 않을 경우 필드명으로 컬럼명에 매핑한다
-     * 대소문자를 구분하는 데이터베이스의 경우 @Column(name = "")을 명시적으로 매핑 필수
-     */
-    private Integer age;
+    //연관관계 매핑
+    @ManyToOne(
+            // optional = false //연관된 엔티티가 항상 있어야함
+            // fetch = FetchType.EAGER or FetchType.LAZY //EAGER : 즉시 실행, LAZY : 지연 실행
+            // cascade =  //영속성 전이 추후 확인 필요
+            // targetEntity = Member.class //연관된 엔티티의 타입 정보를 설정, 거의 사용하지 않음
+    )
+    //테이블 연관관계, 외래 키 매핑시 사용, 생략 가능한 어노테이션
+    @JoinColumn(
+            name = "TEAM_ID" //매핑할 외래 키 이름 지정
+            //referencedColumnName = "", //외래 키가 참조하는 대상 테이블의 컬럼명
+            //foreignKey = //외래 키 제약조건 설정
+            //나머지 속성은 @Column 속성과 동일
+    )
+    private Team team; //객체 연관관계
 
-    @Enumerated(EnumType.STRING)
-    private RoleType roleType;
+    public Member(String id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastModifiedDate;
-
-    private String description;
-
+    //연관관계 설정
+    public void setTeam(Team team) {
+        this.team = team;
+        team.getMembers().add(this);
+    }
 }
