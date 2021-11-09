@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,27 +14,39 @@ import java.util.List;
 @Setter
 public class Team {
 
-    @Id
+    @Id @GeneratedValue
     @Column(name = "TEAM_ID")
-    private String id;
+    private Long id;
 
-    private String name;
+//    //일대다 단방향 양방향
+//    @Id @GeneratedValue
+//    @Column(name = "TEAM_ID")
+//    private Long id;
+//
+//    private String name;
+//
+//    @OneToMany
+//    /**
+//        일대다 단방향 관계를 매핑할 때 명시해야 하는 어노테이션
+//          명시하지 않을 경우 각 테이블의 중간에 연관관계를 관리하는 조인 테이블 전략을 기본으로 사용해서 매핑한다.
+//     */
+//    @JoinColumn(name = "TEAM_ID")
+//    private List<Member> members = new ArrayList<>();
 
-    /**
-        1:N 연관관계 매핑
-        mappedby 사용 이유
-            객체 연관관계는 2개의 단방향(양방향 효과), 테이블 연관관계는 1개의 외래키로 양방향
-            엔티티를 양방향처럼 설정하면 참조는 2개이며 외래키는 1개가 되므로
-            연관관계에 해당되는 2개의 엔티티중 하나를 정해서 테이블의 외래키를 관리하는 연관관계의 주인(mappedby)을 정한다
-            * 연관관계 주인은 데이터베이스 연관관계 매핑, 외래키 관리(등록, 수정, 삭제)
-            * 연관관계 주인이 아닌 쪽은 읽기만 허용
-            * 연관관계의 주인 설정은 테이블에 외래키가 있는 곳에 해당하는 엔티티로 정해야 한다
-     */
-    @OneToMany(mappedBy = "team")
-    public List<Member> members = new ArrayList<>();
-
-    public Team(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+//    //다대일 단방향 양방향
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "TEAM_ID")
+//    private Long id;
+//
+//    private String name;
+//
+//    @OneToMany(mappedBy = "team")
+//    private List<Member> members = new ArrayList<>();
+//
+//    public void addMember(Member member) {
+//        this.members.add(member);
+//        if(member.getTeam() != this)
+//            member.setTeam(this);
+//    }
 }

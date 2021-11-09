@@ -12,36 +12,55 @@ import javax.persistence.*;
 @Setter
 public class Member {
 
-    @Id
-    @Column(name = "MEMEBER_ID")
-    private String id;
+    @Id @GeneratedValue
+    @Column(name = "MEMBER_ID")
+    private Long id;
 
-    private String username;
+//    //주 테이블에 외래 키가 있는 단방향 관계
+//    @Id @GeneratedValue
+//    @Column(name = "MEMBER_ID")
+//    private Long id;
+//
+//    private String username;
+//
+//    @OneToOne
+//    @JoinColumn(name = "LOCKER_ID")
+//    private Locker locker;
 
-    //연관관계 매핑
-    @ManyToOne(
-            // optional = false //연관된 엔티티가 항상 있어야함
-            // fetch = FetchType.EAGER or FetchType.LAZY //EAGER : 즉시 실행, LAZY : 지연 실행
-            // cascade =  //영속성 전이 추후 확인 필요
-            // targetEntity = Member.class //연관된 엔티티의 타입 정보를 설정, 거의 사용하지 않음
-    )
-    //테이블 연관관계, 외래 키 매핑시 사용, 생략 가능한 어노테이션
-    @JoinColumn(
-            name = "TEAM_ID" //매핑할 외래 키 이름 지정
-            //referencedColumnName = "", //외래 키가 참조하는 대상 테이블의 컬럼명
-            //foreignKey = //외래 키 제약조건 설정
-            //나머지 속성은 @Column 속성과 동일
-    )
-    private Team team; //객체 연관관계
+//    //일대다 단방향 양방향
+//    @Id @GeneratedValue
+//    @Column(name = "MEMBER_ID")
+//    private Long id;
+//
+//    private String username;
+//
+//    /**
+//        다대일 단방향 매핑 (읽기전용)
+//        이렇게 사용하면 양쪽에서 외래키를 관리하여 문제가 발생할 수 있으므로
+//        등록, 수정을 false로 설정하여 읽기만 가능하게
+//     */
+//    @ManyToOne
+//    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+//    private Team team;
 
-    public Member(String id, String username) {
-        this.id = id;
-        this.username = username;
-    }
-
-    //연관관계 설정
-    public void setTeam(Team team) {
-        this.team = team;
-        team.getMembers().add(this);
-    }
+//    //다대일 단방향 양방향
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "MEMBER_ID")
+//    private Long id;
+//
+//    @Column(name = "USERNAME")
+//    private String username;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "TEAM_ID")
+//    private Team team;
+//
+//    public void setTeam(Team team) {
+//        this.team = team;
+//
+//        //getMembers 안에 본인이 없는 경우에 추가
+//        if(!team.getMembers().contains(this))
+//            team.getMembers().add(this);
+//    }
 }
