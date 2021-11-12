@@ -1,9 +1,7 @@
 package queryDSL;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import javax.persistence.*;
+import java.util.List;
 
 public class MainCl {
 
@@ -15,17 +13,85 @@ public class MainCl {
                 프록시 객체와 엔티티는 동일한 기준으로 생성되며 실제 객체의 참조(target)를 보관하므로 실제 객체와 동일하게 사용
                 프록시 객체 초기화 : 실제 객체가 조회될 때 데이터베이스를 조회하여 실제 엔티티 객체를 생성
 
+        프록시 특징
+            프록시 객체는 사용할 때 한번만 초기화 진행
+            프록시 객체가 초기화 되면 실제 엔티티에 접근 가능
+            프록시 객체는 원본 엔티티를 상속받은 객체이므로 타입 체크 주의
+            EntityManager.getReference()를 호출하면 사용시 DB를 조회하지만 영속성 컨텍스트에 있는경우 실제엔티티를 바로 반환
+            프록시 객체의 초기화 진행은 영속성 컨텍스트의 도움을 받아야 가능하며 준영속 상태의 프록시를 초기화 하면 문제 발생
+
         영속성 전이와 고아 객체 : 연관된 객체를 함께 저장 또는 삭제 할 수 있는 영속성 전이와 고아 객체 제거라는 기능을 사용
 
         지연 로딩 : 조회 후 사용 시점에 조회 (하이버네이트에서 즉시 로딩을 지원하는 2가지 방법 프록시, 바이트코드 수정)
             실제 엔티티 객체 대신에 데이터베이스 조회를 지연할 수 있는 가짜 객체가 필요하며 이것을 프록시 객체라 칭함
 
-        즉시 로딩 : 조회 시점에 조회
+        즉시 로딩 : 연관된 엔티티 즉시 조회, 하이버네이트는 가능하면 SQL조인을 이용하여 한번에 조회한다
+
+        FetchType.EAGER(즉시 실행)를 설정 시 반영되는 조인 전략
+        ManyToOne(N:1), OneToOne(1:1) : optional = false(내부 조인), optional = true(외부 조인)
+        OneToMany(1:N), ManyToMany(N:N) : optional = false(외부 조인), optional = true(외부 조인)
+
+        영속성 전이(CASCADE) : Transitive Persistence
+             cascade = CascadeType.PERSIST를 선언하여 자식객체에 부모객체를 넣고 부모객체를 영속 상태로 만들면 자식 객체들도 영속 상태로 전이
+             cascade = CascadeType.REMOVE를 선언하여 부모 엔티티를 영속 상태에서 제거(& 테이블에 delete)하면 자식 엔티티도 영속 제거
+             CascadeType.PERSIST, CascadeType.REMOVE는 persist() 또는 remove() 함수 호출 시 진행되지 않고 flash()가 호출될 때 작동
+
+        고아 객체 : 부모 엔티티와 연관관계가 끊어진 자식 엔티티를 자동으로 삭제하는 기능
+            고아 객체란 참조가 제거된 엔티티는 다른 곳에서 참조하지 않는 고아 객체로 보고 삭제하는 기능
+            # 해당 기능을 사용할 때 유의사항으로 고아 객체 기능을 당하는 쪽에서 참조하고 있는 상위 엔티티가 1개인 경우만 사용
+            orphanRemove를 설정하는 엔티티(부모)에서 다중성이 @OneToOne or @OneToMany 인 경우에만 설정 가능
+            orphanRemove = true를 설정하고 부모 엔티티를 삭제하면 자식 엔티티도 영속 제거(삭제)되며 cascade = CasacadeType.REMOVER와 동일
      */
 
-    static void printUserAndTeam(String memberId, EntityManager em) {
-        Member member = em.find(Member.class, memberId);
-        Team team = member.getTeam();
+    static void insert(EntityManager em) {
+        Team team = new Team();
+        team.setName("팀A");
+        em.persist(team);
+
+        Member member = new Member();
+        member.setUsername("사용자1");
+        member.setTeam(team);
+        em.persist(member);
+
+        Orders orders = new Orders();
+        orders.setMember(member);
+        orders.setName("멤버1");
+        em.persist(orders);
+    }
+
+    static void select(EntityManager em) {
+        Member member = em.find(Member.class, 2L);
+        /**
+            하이버네이트는 엔티티를 영속 상태로 만들 때 엔티티에 컬렉션이 있을 경우 컬렉션을 추적 및 관리 목적으로
+            원본 컬렉션을 하이버네이트 내장컬렉션으로 변경하며 컬렉션 래퍼라고 칭함
+            org.hibernate.collection.internal.PersistentBag
+
+            컬렉션 지연 로딩 : 엔티티를 지연 로딩하면 프록시 객체를 이용해서 지연 로딩을 수행하고
+                컬렉션은 컬렉션 래퍼가 지연 로딩을 처리
+         */
+        List<Orders> orders = member.getOrders();
+        System.out.println(orders.getClass().getName());
+    }
+
+    static void cascadeInsert(EntityManager em) {
+        Child child1 = new Child();
+        Parent parent = new Parent();
+        //child1.setParent(parent); //자식 객체가 부모 객체의 영속 전이를 받더라도 부모를 set하지 않으면 부모키를 받을 수 없다.
+        //parent.getChilds().add(child1); //부모 객체를 영속화할 때 영속 전이로 자식 객체도 영속화되므로 add하지 않으면 자식 객체는 영속화되지 않음
+        //편의메소드 사용
+        parent.addChilds(child1);
+        em.persist(parent);
+    }
+
+    static void cascadeRemove(EntityManager em) {
+        Parent parent = em.find(Parent.class, 1L);
+        em.remove(parent);
+    }
+
+    static void orphanRemoval(EntityManager em) {
+        Parent parent = em.find(Parent.class, 1L);
+        //parent.getChilds().remove(0); //특정 자식을 부모 엔티티에서 제거
+        parent.getChilds().clear(); //모든 자식을 부모 엔티티에서 제거
 
     }
 
@@ -36,7 +102,8 @@ public class MainCl {
 
         try {
             et.begin();
-
+            cascadeInsert(em);
+            //orphanRemoval(em);
             et.commit();
         } catch (Exception e) {
             et.rollback();
